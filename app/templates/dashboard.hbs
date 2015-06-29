@@ -1,0 +1,35 @@
+<h1>Beställningar/fjärrlån</h1>
+<div class="row">
+  <div class="col-xs-6">
+    {{view 'select' class='form-control' content=libraries optionValuePath='content.id' optionLabelPath='content.name' value=lib}}
+  </div>
+  <div class="col-xs-3">
+    {{bs-datetimepicker date=fromDate enabledDates=false dateIcon='fa fa-calendar' icons=icons maxDate=toDate format='YYYY-MM-DD'}}
+  </div>
+  <div class="col-xs-3">
+    {{bs-datetimepicker date=toDate minDate=minToDate maxDate=maxToDate dateIcon='fa fa-calendar' icons=icons format='YYYY-MM-DD'}}
+  </div>
+</div>
+<h3>{{numberOfOrders}} beställningar/fjärrlån</h3>
+<div class="row">
+
+  <div class="col-xs-12">
+    {{high-charts content=numberOfOrdersChartData chartOptions=numberOfOrdersChartOptions}}
+  </div>
+</div>
+<div class="row">
+  <div class="col-xs-6">
+    {{high-charts content=orderTypesData chartOptions=orderTypesOptions}}
+  </div>
+  <div class="col-xs-6">
+    {{high-charts content=deliverySourceData chartOptions=deliverySourceOptions}}
+  </div>
+</div>
+<div class="row">
+  <div class="col-xs-6">
+    {{high-charts content=orderLibraryData chartOptions=orderLibraryOptions}}
+  </div>
+  <div class="col-xs-6">
+    {{high-charts content=orderPathData chartOptions=orderPathOptions}}
+  </div>
+</div>
