@@ -1,9 +1,10 @@
 import Ember from 'ember';
+import ENV from '../config/environment';
 
 export default Ember.Route.extend({
 
   queryParams: {
-    lib: {
+    location: {
       refreshModel: true
     },
     from: {
@@ -24,12 +25,12 @@ export default Ember.Route.extend({
 
     var qp = transition.queryParams;
 
-    var lib = qp.lib || '0';
+    var location = qp.location || '';
     var from = qp.from || moment().subtract(1, 'months').format('YYYY-MM-DD');
     var to = qp.to || moment().format('YYYY-MM-DD');
 
-    if (!qp.lib || !qp.from || !qp.to) {
-      this.transitionTo({queryParams: {lib: lib, from: from, to: to}});
+    if (!qp.location || !qp.from || !qp.to) {
+      this.transitionTo({queryParams: {location: location, from: from, to: to}});
     }
 
   },
@@ -37,26 +38,83 @@ export default Ember.Route.extend({
   model: function(params) {
     return Ember.RSVP.hash({
       orders: Ember.$.ajax({
-        url: '/orders.json'
+        url: ENV.APP.serviceURL + '/statistics?' + 'location=' + params.location + '&start=' + params.from + '&end=' + params.to
       }).then(function(result) {
-
-        var data = result.filter(function(item) {
-          return (item.date >= params.from && item.date <= params.to);
-        }).map(function(order) {
-          return [order.date, order.value];
+        var data = $.map(result.incoming.per_day, function(value, key) {
+          return [[key, value]];
         });
-
         return [
           {
-            name: 'Beställningar/fjärrlån',
+            name: 'beställningar',
             data: data
           }
         ];
-
       }),
+
       orderTypes: Ember.$.ajax({
-        url: '/orderTypes.json'
+        url: ENV.APP.serviceURL + '/statistics?' + 'location=' + params.location + '&start=' + params.from + '&end=' + params.to
+      }).then(function(result) {
+        var data = $.map(result.order_types, function(outerValue) {
+            return $.map(outerValue, function(innerValue, key) {
+              return [[key, innerValue]];
+          });
+        });
+        return [
+          {
+            name: 'Beställningstyp',
+            data: data
+          }
+        ];
+      }),
+
+      deliverySources: Ember.$.ajax({
+        url: ENV.APP.serviceURL + '/statistics?' + 'location=' + params.location + '&start=' + params.from + '&end=' + params.to
+      }).then(function(result) {
+        var data = $.map(result.delivery_sources, function(outerValue) {
+            return $.map(outerValue, function(innerValue, key) {
+              return [[key, innerValue]];
+          });
+        });
+        return [
+          {
+            name: 'Levererad från',
+            data: data
+          }
+        ];
+      }),
+
+      locations: Ember.$.ajax({
+        url: ENV.APP.serviceURL + '/statistics?' + 'location=' + params.location + '&start=' + params.from + '&end=' + params.to
+      }).then(function(result) {
+        var data = $.map(result.locations, function(outerValue) {
+            return $.map(outerValue, function(innerValue, key) {
+              return [[key, innerValue]];
+          });
+        });
+        return [
+          {
+            name: 'Handläggande bibliotek',
+            data: data
+          }
+        ];
+      }),
+
+      orderPaths: Ember.$.ajax({
+        url: ENV.APP.serviceURL + '/statistics?' + 'location=' + params.location + '&start=' + params.from + '&end=' + params.to
+      }).then(function(result) {
+        var data = $.map(result.order_paths, function(outerValue) {
+            return $.map(outerValue, function(innerValue, key) {
+              return [[key, innerValue]];
+          });
+        });
+        return [
+          {
+            name: 'Beställningsväg',
+            data: data
+          }
+        ];
       })
+
     });
   }
 });

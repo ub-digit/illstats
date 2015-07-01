@@ -5,7 +5,7 @@ export default Ember.Controller.extend({
 
   librariesBinding: 'controllers.application.libraries',
 
-  queryParams: ['lib', 'from', 'to'],
+  queryParams: ['location', 'from', 'to'],
 
   fromDate: Ember.computed('from', function(key, value) {
     if (arguments.length > 1) {
@@ -36,12 +36,6 @@ export default Ember.Controller.extend({
     previous: "fa fa-chevron-left"
   },
 
-
-
-
-
-
-
   numberOfOrders: Ember.computed('model.orders', function() {
     var sum = 0;
     this.get('model.orders.0.data').forEach(function(item) {
@@ -65,6 +59,7 @@ export default Ember.Controller.extend({
     },
     yAxis: {
       min: 0,
+      allowDecimals: false,
       title: {
         text: null
       }
@@ -75,56 +70,32 @@ export default Ember.Controller.extend({
   },
 
 
-  orderTypesData: Ember.computed('model.orderTypes', 'fromDate', 'toDate', function() {
-
-    return [{
-      name: 'Beställningstyper',
-      data: this.get('model.orderTypes')
-    }];
-  }),
+  orderTypesData: Ember.computed.alias('model.orderTypes'),
 
   orderTypesOptions: {
     chart: {
         type: 'pie'
     },
     title: {
-      text: 'Beställningstyper'
+      text: 'Beställningstyp'
     }
   },
 
 
 
-  deliverySourceData: [{
-    name: 'Leveransställen',
-    data: [
-      ['Libris', 50],
-      ['Egen samling', 30],
-      ['Subito', 10],
-      ['OCLC', 6],
-      ['Netpunkt', 8],
-      ['Bibsys', 20],
-      ['BLLD', 4],
-      ['Övriga', 9]
-    ]
-  }],
+  deliverySourceData: Ember.computed.alias('model.deliverySources'),
 
   deliverySourceOptions: {
     chart: {
         type: 'pie'
     },
     title: {
-      text: 'Leveransställen'
+      text: 'Levererad från'
     }
   },
 
-  orderPathData: [{
-    name: 'Beställningsväg',
-    data: [
-      ['SFX', 15],
-      ['Web', 35],
-      ['Libris', 50]
-    ]
-  }],
+
+  orderPathData: Ember.computed.alias('model.orderPaths'),
 
   orderPathOptions: {
     chart: {
@@ -135,24 +106,15 @@ export default Ember.Controller.extend({
     }
   },
 
-  orderLibraryData: [{
-    name: 'Mottagande bibliotek',
-    data: [
-      ['G', 30],
-      ['Gp', 35],
-      ['Gk', 50],
-      ['Ge', 20],
-      ['Gumu', 30],
-      ['Gm', 100]
-    ]
-  }],
+
+  orderLibraryData: Ember.computed.alias('model.locations'),
 
   orderLibraryOptions: {
     chart: {
         type: 'pie'
     },
     title: {
-      text: 'Mottagande bibliotek'
+      text: 'Handläggande bibliotek'
     }
   }
 });
